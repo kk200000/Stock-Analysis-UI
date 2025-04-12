@@ -1,0 +1,110 @@
+# Vscode
+.vscode
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+.pnpm-store/
+bower_components/
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Build output
+dist
+dist-ssr
+*.local
+build/
+out/
+.output
+
+# Testing
+coverage
+/cypress/videos/
+/cypress/screenshots/
+.nyc_output
+junit.xml
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.pid
+*.seed
+*.log.*
+
+# Environment files
+.env
+.env.*
+!.env.example
+.env.development.local
+.env.test.local
+.env.production.local
+
+# TypeScript
+*.tsbuildinfo
+.tsbuildinfo/
+
+# Cache
+.cache
+.temp
+.tmp
+.sass-cache/
+.eslintcache
+.stylelintcache
+.parcel-cache
+
+# Package managers
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+.npmrc
+.yarnrc
+.npm/
+
+# Misc
+*.bak
+*.tmp
+*.temp
+.history/
+.git/
+*.swp
+*.swo
+.vercel
+.next/
+.nuxt/
+.docusaurus
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.vscode-test
+.vagrant/
+.editorconfig
+.gitattributes
