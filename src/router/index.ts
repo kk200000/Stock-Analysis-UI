@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginPage from '../views/LoginPage.vue'
+import RegisterPage from '../views/RegisterPage.vue'
 import HomePage from '../views/HomePage.vue'
+import LoginPage from '../views/LoginPage.vue' 
 import Dashboard from '../views/Dashboard.vue'
 
 const routes = [
@@ -51,8 +52,16 @@ const routes = [
     ],
   },
   {
+    path: '/Register',
+    name: 'RegisterPage',
+    component: RegisterPage,
+  },
+  {
     path: '/login',
     name: 'Login',
+    meta: {
+      title: '登录',
+    },
     component: LoginPage,
   },
 ]

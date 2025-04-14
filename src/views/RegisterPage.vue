@@ -6,12 +6,12 @@
         <img src="/src/assets/forest-image.jpg" alt="Forest" class="background-image" />
       </div>
       <el-card class="login-card">
-        <h3 class="form-title">用户登录</h3>
+        <h3 class="form-title">用户注册</h3>
         <el-form
           :model="form"
           :rules="rules"
-          ref="loginForm"
-          @submit.prevent="handleLogin"
+          ref="formRef"
+          @submit.prevent="handleRegister"
           label-position="top"
           class="login-form"
         >
@@ -22,12 +22,12 @@
             <el-input v-model="form.password" type="password" placeholder="请输入密码" />
           </el-form-item>
           <el-button type="primary" native-type="submit" class="login-button" color="#f0b429"
-            >登录</el-button
+            >注册</el-button
           >
         </el-form>
         <div class="register-section">
-          <span>没有账号？</span>
-          <el-button type="text" @click="goToRegister">返回注册</el-button>
+          <span>已有账号？</span>
+          <el-button type="text" @click="goToLogin">直接登录</el-button>
         </div>
       </el-card>
     </div>
@@ -35,41 +35,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
 
-const router = useRouter()
-const loginForm = ref(null)
-
-const form = ref({
+const form = reactive({
   username: '',
   password: '',
 })
 
-const rules = ref({
+const rules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, message: '用户名至少3个字符', trigger: 'blur' },
+    { min: 3, message: '用户名长度不能少于3个字符', trigger: 'blur' },
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码至少6个字符', trigger: 'blur' },
+    { min: 6, message: '密码长度不能少于6个字符', trigger: 'blur' },
   ],
-})
+}
 
-const handleLogin = () => {
-  loginForm.value?.validate((valid) => {
+const formRef = ref()
+
+const router = useRouter()
+
+const handleRegister = () => {
+  formRef.value?.validate((valid: boolean) => {
     if (valid) {
       router.push('/Dashboard')
     } else {
-      ElMessage.error('请检查表单输入是否正确')
+      alert('请完成表单校验')
     }
   })
 }
 
-const goToRegister = () => {
-  router.push('/Register')
+const goToLogin = () => {
+  router.push('/login')
 }
 </script>
 
