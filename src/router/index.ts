@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import RegisterPage from '../views/RegisterPage.vue'
 import HomePage from '../views/HomePage.vue'
-import LoginPage from '../views/LoginPage.vue' 
+import LoginPage from '../views/LoginPage.vue'
 import Dashboard from '../views/Dashboard.vue'
 
 const routes = [
@@ -10,26 +10,26 @@ const routes = [
     name: 'Home',
     component: HomePage,
     children: [
-      // / 重定向到首页
       {
         path: '/',
         name: 'Dashboard',
         redirect: '/Dashboard',
-
       },
       {
         path: '/Dashboard',
         name: 'Dashboard',
         meta: {
           title: '首页',
+          requiresAuth: true, // 需要登录
         },
-        component: Dashboard
+        component: Dashboard,
       },
       {
         path: '/marketindex',
         name: 'MarketIndex',
         meta: {
           title: '股市大盘指数',
+          requiresAuth: true, // 需要登录
         },
         component: () => import('../views/MarketIndex.vue'),
       },
@@ -38,6 +38,7 @@ const routes = [
         name: 'StockTrend',
         meta: {
           title: '个股价格趋势',
+          requiresAuth: true, // 需要登录
         },
         component: () => import('../views/StockTrend.vue'),
       },
@@ -46,6 +47,7 @@ const routes = [
         name: 'StockPrediction',
         meta: {
           title: '股票价格预测',
+          requiresAuth: true, // 需要登录
         },
         component: () => import('../views/StockPrediction.vue'),
       },
@@ -59,9 +61,6 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    meta: {
-      title: '登录',
-    },
     component: LoginPage,
   },
 ]
@@ -74,11 +73,19 @@ const router = createRouter({
 // Navigation guard
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('token') // 检查用户是否已登录
-  
-  if (to.path === '/' && isAuthenticated) {
-    next('/Dashboard')
+
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    // 如果路由需要登录
+    if (isAuthenticated) {
+      next() // 已登录，继续访问
+    } else {
+      next('/login') // 未登录，跳转到登录页
+    }
+  } else if (to.path === '/' && !isAuthenticated) {
+    // 未登录时输入域名，跳转到登录页
+    next('/login')
   } else {
-    next()
+    next() // 不需要登录的页面，继续访问
   }
 })
 

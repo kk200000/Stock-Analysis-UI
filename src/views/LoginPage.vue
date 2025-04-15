@@ -15,8 +15,8 @@
           label-position="top"
           class="login-form"
         >
-          <el-form-item label="用户名" class="form-item" prop="username">
-            <el-input v-model="form.username" placeholder="请输入用户名" />
+          <el-form-item label="手机号" class="form-item" prop="phone">
+            <el-input v-model="form.phone" placeholder="请输入手机号" />
           </el-form-item>
           <el-form-item label="密码" class="form-item" prop="password">
             <el-input v-model="form.password" type="password" placeholder="请输入密码" />
@@ -38,19 +38,21 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import service from '@/utils/request'
 
 const router = useRouter()
 const loginForm = ref(null)
 
 const form = ref({
-  username: '',
+  phone: '', // 修改字段名为 phone
   password: '',
 })
 
 const rules = ref({
-  username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, message: '用户名至少3个字符', trigger: 'blur' },
+  phone: [
+    // 修改字段名为 phone
+    { required: true, message: '请输入手机号', trigger: 'blur' },
+    { min: 3, message: '手机号至少3个字符', trigger: 'blur' },
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
@@ -58,10 +60,31 @@ const rules = ref({
   ],
 })
 
-const handleLogin = () => {
-  loginForm.value?.validate((valid) => {
+const handleLogin = async () => {
+  loginForm.value?.validate(async (valid) => {
     if (valid) {
-      router.push('/Dashboard')
+      try {
+        const response = await service.post('/base/login/', {
+          phone: form.value.phone, // 使用 phone 字段
+          password: form.value.password,
+        })
+        localStorage.setItem('token', response.data.token)
+        ElMessage.success('登录成功')
+        router.push('/Dashboard')
+      } catch (error) {
+        if (error.response?.status === 404) {
+          ElMessage.error('接口未找到，请检查接口路径是否正确')
+        } else {
+          const errorMessage = error.response?.data?.error
+          if (errorMessage === '密码错误') {
+            ElMessage.error('密码错误，请重试')
+          } else if (errorMessage === '用户不存在') {
+            ElMessage.error('用户不存在，请检查手机号')
+          } else {
+            ElMessage.error('登录失败，请重试')
+          }
+        }
+      }
     } else {
       ElMessage.error('请检查表单输入是否正确')
     }

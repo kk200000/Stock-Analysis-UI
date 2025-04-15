@@ -15,15 +15,28 @@
           label-position="top"
           class="login-form"
         >
-          <el-form-item label="用户名" class="form-item" prop="username">
-            <el-input v-model="form.username" placeholder="请输入用户名" />
+          <el-form-item label="手机号" class="form-item" prop="phone">
+            <el-input v-model="form.phone" placeholder="请输入手机号" />
+          </el-form-item>
+          <el-form-item label="验证码" class="form-item" prop="verification_code">
+            <el-input v-model="form.verification_code" placeholder="请输入验证码" />
+            <el-button type="primary" @click="sendVerificationCode" class="send-code-button">
+              发送验证码
+            </el-button>
           </el-form-item>
           <el-form-item label="密码" class="form-item" prop="password">
             <el-input v-model="form.password" type="password" placeholder="请输入密码" />
           </el-form-item>
-          <el-button type="primary" native-type="submit" class="login-button" color="#f0b429"
-            >注册</el-button
-          >
+          <el-form-item label="确认密码" class="form-item" prop="confirm_password">
+            <el-input
+              v-model="form.confirm_password"
+              type="password"
+              placeholder="请再次输入密码"
+            />
+          </el-form-item>
+          <el-button type="primary" native-type="submit" class="login-button" color="#f0b429">
+            注册
+          </el-button>
         </el-form>
         <div class="register-section">
           <span>已有账号？</span>
@@ -37,33 +50,73 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import service from '@/utils/request'
 
 const form = reactive({
-  username: '',
+  phone: '',
+  verification_code: '',
   password: '',
+  confirm_password: '',
 })
 
 const rules = {
-  username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, message: '用户名长度不能少于3个字符', trigger: 'blur' },
+  phone: [
+    { required: true, message: '请输入手机号', trigger: 'blur' },
+    { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号', trigger: 'blur' },
   ],
+  verification_code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
     { min: 6, message: '密码长度不能少于6个字符', trigger: 'blur' },
   ],
+  confirm_password: [
+    { required: true, message: '请确认密码', trigger: 'blur' },
+    {
+      validator: (rule, value, callback) => {
+        if (value !== form.password) {
+          callback(new Error('两次输入的密码不一致'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur',
+    },
+  ],
 }
 
 const formRef = ref()
-
 const router = useRouter()
 
-const handleRegister = () => {
-  formRef.value?.validate((valid: boolean) => {
+const sendVerificationCode = async () => {
+  if (!form.phone) {
+    ElMessage.error('请先输入手机号')
+    return
+  }
+  try {
+    await service.post('/base/send_verification_code/', { phone: form.phone })
+    ElMessage.success('验证码发送成功')
+  } catch (error) {
+    ElMessage.error(error.response?.data?.error || '验证码发送失败')
+  }
+}
+
+const handleRegister = async () => {
+  formRef.value?.validate(async (valid: boolean) => {
     if (valid) {
-      router.push('/Dashboard')
+      try {
+        const response = await service.post('/base/register/', {
+          phone: form.phone,
+          password: form.password,
+          verification_code: form.verification_code,
+        })
+        ElMessage.success(response.data.message || '注册成功')
+        router.push('/login')
+      } catch (error) {
+        ElMessage.error(error.response?.data?.error || '注册失败')
+      }
     } else {
-      alert('请完成表单校验')
+      ElMessage.error('请完成表单校验')
     }
   })
 }
@@ -141,6 +194,10 @@ const goToLogin = () => {
   width: 100%;
   margin-top: 10px;
   color: #fff;
+}
+
+.send-code-button {
+  margin-top: 10px;
 }
 
 .register-section {
