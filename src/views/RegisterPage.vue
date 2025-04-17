@@ -20,7 +20,7 @@
           </el-form-item>
           <el-form-item label="验证码" class="form-item" prop="verification_code">
             <el-input v-model="form.verification_code" placeholder="请输入验证码" />
-            <el-button type="primary" @click="sendVerificationCode" class="send-code-button">
+            <el-button type="primary" color="#f0b429" @click="sendVerificationCode" class="send-code-button">
               发送验证码
             </el-button>
           </el-form-item>
@@ -198,6 +198,7 @@ const goToLogin = () => {
 
 .send-code-button {
   margin-top: 10px;
+  color: #fff;
 }
 
 .register-section {
